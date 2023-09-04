@@ -1,0 +1,64 @@
+CREATE DATABASE OBLBD1
+GO
+USE OBLBD1
+GO
+CREATE TABLE BARRIO(codBarrio numeric(6), 
+                    nomBarrio varchar(30),
+					CONSTRAINT PK_Barrio PRIMARY KEY(codBarrio))
+GO
+CREATE TABLE ES_VECINO(codBarrio1 numeric(6),
+                       codBarrio2 numeric(6),
+					   CONSTRAINT PK_Vecino PRIMARY KEY(codBarrio1,codBarrio2),
+					   CONSTRAINT FK_Barrio1 FOREIGN KEY(codBarrio1) REFERENCES Barrio(codBarrio),
+					   CONSTRAINT FK_Barrio2 FOREIGN KEY(codBarrio2) REFERENCES Barrio(codBarrio))
+GO
+CREATE TABLE ESTACION(codEst numeric(6), 
+                      dscEst varchar(30),
+					  codBarrio numeric(6),
+					  tipoEst character(1),
+					  CONSTRAINT PK_Estacion PRIMARY KEY(codEst),
+					  CONSTRAINT FK_BarrioEstacion FOREIGN KEY(codBarrio) REFERENCES Barrio(codBarrio))
+GO
+CREATE TABLE LINEA(numLinea numeric(6),
+                   dscLinea varchar(30),
+				   colorLinea varchar(20), 
+				   longLinea numeric(12,2),
+				   codEstOrigen numeric(6), 
+				   codEstDestino numeric(6),
+				   CONSTRAINT PK_Linea PRIMARY KEY(numLinea),
+				   CONSTRAINT FK_Origen FOREIGN KEY(codEstOrigen) REFERENCES Estacion(codEst),
+				   CONSTRAINT FK_Destino FOREIGN KEY(codEstDestino) REFERENCES Estacion(codEst))
+GO
+CREATE TABLE MOLINETE(codEst numeric(6), 
+                      numMol numeric(3),
+					  acumMol numeric(10),
+					  fchMol datetime,
+					  CONSTRAINT PK_Molinete PRIMARY KEY(codEst,numMol),
+					  CONSTRAINT FK_EstMol FOREIGN KEY(codEst) REFERENCES Estacion(codEst))
+GO
+CREATE TABLE TREN(numTren numeric(6),
+                  dscTren varchar(30),
+				  letraTren char(1),
+				  CONSTRAINT PK_Tren PRIMARY KEY(numTren))
+GO
+CREATE TABLE VAGON(numTren numeric(6),
+                   numVagon numeric(2),
+				   capVagon numeric(10),
+				   CONSTRAINT PK_Vagon PRIMARY KEY(numTren,numVagon),
+				   CONSTRAINT FK_TrenVagon FOREIGN KEY(numTren) REFERENCES Tren(numTren))
+GO
+
+CREATE TABLE LIN_EST(numLinea numeric(6), 
+                     codEst numeric(6),
+					 CONSTRAINT PK_Lin_Est PRIMARY KEY(numLinea,codEst),
+					 CONSTRAINT FK_Linea_LinEst FOREIGN KEY(numLinea) REFERENCES Linea(numLinea),
+					 CONSTRAINT FK_Estac_LinEst FOREIGN KEY(codEst) REFERENCES Estacion(codEst))
+GO
+CREATE TABLE PASA_POR(numTren numeric(6), 
+                      numLinea numeric(6), 
+					  codEst numeric(6), 
+					  fechahora_pasa datetime,
+					  CONSTRAINT PK_PasaPor PRIMARY KEY(numTren,numLinea,codEst,fechahora_pasa),
+					  CONSTRAINT FK_TrenPasaPor FOREIGN KEY(numTren) REFERENCES Tren(numTren),
+					  CONSTRAINT FK_LineaEstacion FOREIGN KEY(numLinea,codEst) REFERENCES LIN_EST(numLinea,codEst))
+GO
